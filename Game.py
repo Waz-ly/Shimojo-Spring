@@ -8,7 +8,10 @@ pygame.init()
 
 class GameInformation:
     def __init__(self):
-        self.stimuli = ["stimuli/" + f for f in os.listdir("stimuli")]
+        self.stimuli = []
+        for f in os.listdir("stimuli"):
+            if not f[0] == '.':
+                self.stimuli.append("stimuli/" + f)
         num_stimuli = len(self.stimuli)
 
         self.conditioning_completed = False
