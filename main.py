@@ -9,13 +9,47 @@ class SimilarityTest:
         self.lastMoves = []
         self.lastLastMoves = []
 
+    def run_conditioning(self):
+        clock = pygame.time.Clock()
+        run = True
+        gameInfo = self.game.loop(False, 0)
+
+        while run:
+            clock.tick(60)
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    if (pygame.mouse.get_pos()[0] < NEXT_CENTER_X + NEXT_WIDTH//2
+                        and pygame.mouse.get_pos()[1] < NEXT_CENTER_Y + NEXT_HEIGHT//2
+                        and pygame.mouse.get_pos()[1] > NEXT_CENTER_Y - NEXT_HEIGHT//2
+                        and pygame.mouse.get_pos()[0] > NEXT_CENTER_X - NEXT_WIDTH//2):
+                        
+                        self.game.next_conditioning()
+
+                    if (pygame.mouse.get_pos()[0] < BUTTON_C_X + BUTTON_SIZE
+                        and pygame.mouse.get_pos()[1] < BUTTON_C_Y + BUTTON_SIZE
+                        and pygame.mouse.get_pos()[1] > BUTTON_C_Y
+                        and pygame.mouse.get_pos()[0] > BUTTON_C_X):
+                        
+                        self.game.play_C()
+
+            gameInfo = self.game.loop(False, 0)
+
+            if gameInfo.conditioning_completed:
+                run = False
+                break
+
+            pygame.display.update()
+
     # function used to play against one's self
     def play_self(self):
+        self.run_conditioning()
+
         clock = pygame.time.Clock()
         run = True
         pressed = False
-        clicked = False
-        moveMade = False
         gameInfo = self.game.loop(False, 0)
 
         while run:
@@ -70,7 +104,9 @@ class SimilarityTest:
         for file in stimuli_files:
             stimuli_modification.append(file[file.find('(')+1:file.find(')')])
 
-        output = np.empty((11, 11), dtype=object)
+        similarity_array_size = self.game.gameInfo.similarityArray.shape[0]
+
+        output = np.empty((similarity_array_size + 1, similarity_array_size + 1), dtype=object)
         output[0, 0] = ""
         output[0, 1:] = stimuli_modification
         output[1:, 0] = stimuli_modification
