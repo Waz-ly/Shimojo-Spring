@@ -8,6 +8,8 @@ pygame.init()
 
 class GameInformation:
     def __init__(self):
+        self.preference = False
+
         self.stimuli = ['stimuli/Bach_AI_Stimuli (original).wav']
         for f in os.listdir("stimuli"):
             if not f[0] == '.' and not f[0] == 'Bach_AI_Stimuli (original).wav':
@@ -122,6 +124,73 @@ class Game:
         counter = LARGE_FONT.render(f"{self.gameInfo.pair_number}", 1, WHITE)
         self.window.blit(counter, (20, 10))
 
+    def draw_preference(self):
+        self.window.fill(BLACK)
+
+        if self.gameInfo.playing_A:
+            button_A_file = 'pause.webp'
+        else:
+            button_A_file = 'play.webp'
+
+        button_A_image = pygame.image.load(os.path.join('assets', button_A_file))
+        button_A_image = pygame.transform.scale(button_A_image, (BUTTON_SIZE, BUTTON_SIZE))
+        self.window.blit(button_A_image, (BUTTON_A2_X, BUTTON_A2_Y))
+
+        stimuli_A_label = LARGE_FONT.render(f"Stimuli A", 1, WHITE)
+        self.window.blit(stimuli_A_label, (BUTTON_A2_X + 10, BUTTON_A2_Y - 30))
+        
+        if self.gameInfo.playing_B:
+            button_B_file = 'pause.webp'
+        else:
+            button_B_file = 'play.webp'
+
+        button_B_image = pygame.image.load(os.path.join('assets', button_B_file))
+        button_B_image = pygame.transform.scale(button_B_image, (BUTTON_SIZE, BUTTON_SIZE))
+        self.window.blit(button_B_image, (BUTTON_B2_X, BUTTON_A2_Y))
+
+        stimuli_B_label = LARGE_FONT.render(f"Stimuli B", 1, WHITE)
+        self.window.blit(stimuli_B_label, (BUTTON_B2_X + 10, BUTTON_B2_Y - 30))
+
+        pygame.draw.rect(self.window, WHITE, (NEXT_BOX2_X, NEXT_BOX2_Y, NEXT_WIDTH, NEXT_HEIGHT))
+        pygame.draw.rect(self.window, BLACK, (NEXT_BOX2_X + 5, NEXT_BOX2_Y + 5, NEXT_WIDTH - 10, NEXT_HEIGHT - 10))
+        next_text = LARGE_FONT.render(f"next", 1, WHITE)
+        self.window.blit(next_text, (NEXT_TEXT2_X, NEXT_TEXT2_Y))
+
+        conditioning_prompting1 = SMALL_FONT.render(f"Click the play buttons to listen to the stimuli.", 1, WHITE)
+        conditioning_prompting2 = SMALL_FONT.render(f"Move the slider at the bottom based on preference.", 1, WHITE)
+        conditioning_prompting3 = SMALL_FONT.render(f"Click next when complete. Try to use the full range of the scale.", 1, WHITE)
+        self.window.blit(conditioning_prompting1, (EXPERIMENT_TEXT_X, EXPERIMENT_TEXT_Y1))
+        self.window.blit(conditioning_prompting2, (EXPERIMENT_TEXT_X, EXPERIMENT_TEXT_Y2))
+        self.window.blit(conditioning_prompting3, (EXPERIMENT_TEXT_X, EXPERIMENT_TEXT_Y3))
+
+        # scale
+        pygame.draw.rect(self.window, WHITE, (SCALE_X2, SCALE_Y2, SCALE_WIDTH2, SCALE_HEIGHT2))
+
+        for i in range(SENTIMENT_OPTIONS):
+            tab_center = self.width//2 - (i-SENTIMENT_OPTIONS//2)*SCALE_WIDTH2//(SENTIMENT_OPTIONS-1)
+
+            tab_x2 = tab_center - TAB_HEIGHT//2
+            text_x2 = tab_center - SMALL_FONT_SIZE//2
+
+            pygame.draw.rect(self.window, WHITE, (tab_x2, TAB_Y2, TAB_HEIGHT, TAB_WIDTH))
+
+            # negative numbers = prefer A
+            scale_level = SMALL_FONT.render(f'{i-4}', 1, WHITE)
+            self.window.blit(scale_level, (text_x2, SCALE_NUMBER_Y2))
+
+        pygame.draw.circle(self.window, WHITE,
+                           (self.width//2 - (self.gameInfo.similarityScore-5)*SCALE_WIDTH2//(SENTIMENT_OPTIONS-1), SCALE_CENTER2),
+                           SIMILARITY_INDICATOR_SIZE)
+
+        scale_max = SMALL_FONT.render(f"Prefer A", 1, WHITE)
+        self.window.blit(scale_max, (SCALE_LABEL_X2_1, SCALE_LABEL_Y2))
+
+        scale_min = SMALL_FONT.render(f"Prefer B", 1, WHITE)
+        self.window.blit(scale_min, (SCALE_LABEL_X2_2, SCALE_LABEL_Y2))
+
+        counter = LARGE_FONT.render(f"{self.gameInfo.pair_number}", 1, WHITE)
+        self.window.blit(counter, (20, 10))
+
     def draw_familiarity(self):
         self.window.fill(BLACK)
 
@@ -134,10 +203,16 @@ class Game:
         button_C_image = pygame.transform.scale(button_C_image, (BUTTON_SIZE, BUTTON_SIZE))
         self.window.blit(button_C_image, (BUTTON_C_X, BUTTON_C_Y))
 
-        conditioning_prompting1 = SMALL_FONT.render(f"In this experiment, you will be rating the similarity", 1, WHITE)
-        conditioning_prompting2 = SMALL_FONT.render(f"of variations on a song to the original song on a scale", 1, WHITE)
-        conditioning_prompting3 = SMALL_FONT.render(f"of 1-9. First, listen to the original a few times to", 1, WHITE)
-        conditioning_prompting4 = SMALL_FONT.render(f"become familiar with it. Click play to begin.", 1, WHITE)
+        if self.gameInfo.preference:
+            conditioning_prompting1 = SMALL_FONT.render(f"In this experiment, you will be rating relative preference", 1, WHITE)
+            conditioning_prompting2 = SMALL_FONT.render(f"of variations on a song to the original song on a scale", 1, WHITE)
+            conditioning_prompting3 = SMALL_FONT.render(f"of -4 to 4. First, listen to the original a few times to", 1, WHITE)
+            conditioning_prompting4 = SMALL_FONT.render(f"become familiar with it. Click play to begin.", 1, WHITE)
+        else:
+            conditioning_prompting1 = SMALL_FONT.render(f"In this experiment, you will be rating the similarity", 1, WHITE)
+            conditioning_prompting2 = SMALL_FONT.render(f"of variations on a song to the original song on a scale", 1, WHITE)
+            conditioning_prompting3 = SMALL_FONT.render(f"of 1-9. First, listen to the original a few times to", 1, WHITE)
+            conditioning_prompting4 = SMALL_FONT.render(f"become familiar with it. Click play to begin.", 1, WHITE)
         self.window.blit(conditioning_prompting1, (PROMPTING_X, PROMPTING_Y1))
         self.window.blit(conditioning_prompting2, (PROMPTING_X, PROMPTING_Y2))
         self.window.blit(conditioning_prompting3, (PROMPTING_X, PROMPTING_Y3))
@@ -201,12 +276,37 @@ class Game:
 
         return self.gameInfo
     
+    def loop2(self, mouse_pressed, mouse_pos):
+        if mouse_pressed:
+            self.gameInfo.similarityScore = max(min((self.width//2 - mouse_pos)*(SENTIMENT_OPTIONS-1)/SCALE_WIDTH2 + 5, 9), 1)
+
+        if not pygame.mixer.music.get_busy():
+            self.gameInfo.playing_A = False
+            self.gameInfo.playing_B = False
+
+        if not self.gameInfo.familiarity_ended:
+            if self.gameInfo.familiarity_started:
+                self.start_familiarity()
+            self.draw_familiarity()
+        else:
+            self.draw_preference()
+
+        return self.gameInfo
+    
     def next_pair(self):
         pygame.mixer.music.stop()
 
         song_pair = self.gameInfo.songOrder[self.gameInfo.pair_number]
         self.gameInfo.similarityArray[song_pair[0], song_pair[1]] = self.gameInfo.similarityScore
         self.gameInfo.similarityArray[song_pair[1], song_pair[0]] = self.gameInfo.similarityScore
+
+        if self.gameInfo.preference:
+            if song_pair[0] == 0:
+                self.gameInfo.similarityArray[song_pair[0], song_pair[1]] = -(self.gameInfo.similarityScore - 5)
+                self.gameInfo.similarityArray[song_pair[1], song_pair[0]] = -(self.gameInfo.similarityScore - 5)
+            else:
+                self.gameInfo.similarityArray[song_pair[0], song_pair[1]] = self.gameInfo.similarityScore - 5
+                self.gameInfo.similarityArray[song_pair[1], song_pair[0]] = self.gameInfo.similarityScore - 5
 
         self.gameInfo.similarityScore = SENTIMENT_INITIAL
         self.gameInfo.pair_number += 1
