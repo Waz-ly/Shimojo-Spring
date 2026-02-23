@@ -9,6 +9,40 @@ class SimilarityTest:
         self.lastMoves = []
         self.lastLastMoves = []
 
+    def run_familiarity(self):
+        clock = pygame.time.Clock()
+        run = True
+        gameInfo = self.game.loop(False, 0)
+
+        while run:
+            clock.tick(60)
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    if (pygame.mouse.get_pos()[0] < NEXT_CENTER_X + NEXT_WIDTH//2
+                        and pygame.mouse.get_pos()[1] < NEXT_CENTER_Y + NEXT_HEIGHT//2
+                        and pygame.mouse.get_pos()[1] > NEXT_CENTER_Y - NEXT_HEIGHT//2
+                        and pygame.mouse.get_pos()[0] > NEXT_CENTER_X - NEXT_WIDTH//2
+                        and self.game.gameInfo.familiarity_completed):
+                        
+                        run = False
+                        self.game.gameInfo.familiarity_ended = True
+                        break
+
+                    if (pygame.mouse.get_pos()[0] < BUTTON_C_X + BUTTON_SIZE
+                        and pygame.mouse.get_pos()[1] < BUTTON_C_Y + BUTTON_SIZE
+                        and pygame.mouse.get_pos()[1] > BUTTON_C_Y
+                        and pygame.mouse.get_pos()[0] > BUTTON_C_X
+                        and not self.game.gameInfo.familiarity_started):
+                        
+                        self.game.start_familiarity()
+
+            gameInfo = self.game.loop(False, 0)
+
+            pygame.display.update()
+
     def run_conditioning(self):
         clock = pygame.time.Clock()
         run = True
@@ -24,27 +58,28 @@ class SimilarityTest:
                     if (pygame.mouse.get_pos()[0] < NEXT_CENTER_X + NEXT_WIDTH//2
                         and pygame.mouse.get_pos()[1] < NEXT_CENTER_Y + NEXT_HEIGHT//2
                         and pygame.mouse.get_pos()[1] > NEXT_CENTER_Y - NEXT_HEIGHT//2
-                        and pygame.mouse.get_pos()[0] > NEXT_CENTER_X - NEXT_WIDTH//2):
+                        and pygame.mouse.get_pos()[0] > NEXT_CENTER_X - NEXT_WIDTH//2
+                        and self.game.gameInfo.conditioning_completed):
                         
-                        self.game.next_conditioning()
+                        run = False
+                        self.game.gameInfo.conditioning_ended = True
+                        break
 
                     if (pygame.mouse.get_pos()[0] < BUTTON_C_X + BUTTON_SIZE
                         and pygame.mouse.get_pos()[1] < BUTTON_C_Y + BUTTON_SIZE
                         and pygame.mouse.get_pos()[1] > BUTTON_C_Y
-                        and pygame.mouse.get_pos()[0] > BUTTON_C_X):
+                        and pygame.mouse.get_pos()[0] > BUTTON_C_X
+                        and not self.game.gameInfo.conditioning_started):
                         
-                        self.game.play_C()
+                        self.game.start_conditioning()
 
             gameInfo = self.game.loop(False, 0)
-
-            if gameInfo.conditioning_completed:
-                run = False
-                break
 
             pygame.display.update()
 
     # function used to play against one's self
     def play_self(self):
+        self.run_familiarity()
         self.run_conditioning()
 
         clock = pygame.time.Clock()
@@ -81,10 +116,10 @@ class SimilarityTest:
 
                         self.game.play_B()
 
-                    if (pygame.mouse.get_pos()[0] < SCALE_X + SCALE_WIDTH
-                        and pygame.mouse.get_pos()[1] < HEIGHT//2 - (self.game.gameInfo.similarityScore-5)*SCALE_HEIGHT//(SENTIMENT_OPTIONS-1) + SIMILARITY_INDICATOR_SIZE
-                        and pygame.mouse.get_pos()[1] > HEIGHT//2 - (self.game.gameInfo.similarityScore-5)*SCALE_HEIGHT//(SENTIMENT_OPTIONS-1) - SIMILARITY_INDICATOR_SIZE
-                        and pygame.mouse.get_pos()[0] > SCALE_X - SCALE_WIDTH):
+                    if (pygame.mouse.get_pos()[0] < SCALE_X + SIMILARITY_INDICATOR_SIZE*2
+                        and pygame.mouse.get_pos()[1] < HEIGHT//2 + SCALE_HEIGHT//2
+                        and pygame.mouse.get_pos()[1] > HEIGHT//2 - SCALE_HEIGHT//2
+                        and pygame.mouse.get_pos()[0] > SCALE_X - SIMILARITY_INDICATOR_SIZE*2):
 
                         pressed = True
 
