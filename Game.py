@@ -44,10 +44,20 @@ class GameInformation:
 
         random.shuffle(self.songOrder)
 
+        self.simple_song_Order = []
+
+        for i in range(1, num_stimuli):
+            self.simple_song_Order.append([0, i])
+
+        random.shuffle(self.simple_song_Order)
+
         self.testing_completed = False
         self.pair_number = 0
         self.similarityArray = np.zeros((num_stimuli, num_stimuli))
         self.similarityScore = SENTIMENT_INITIAL
+
+        self.since_last_repeat = 0
+        self.playing_original = False
 
         self.playing_A = False
         self.playing_B = False
@@ -191,6 +201,53 @@ class Game:
         counter = LARGE_FONT.render(f"{self.gameInfo.pair_number}", 1, WHITE)
         self.window.blit(counter, (20, 10))
 
+    def draw_simple_preference(self):
+        self.window.fill(BLACK)
+
+        if self.gameInfo.playing_C:
+            button_A_file = 'pause.webp'
+        else:
+            button_A_file = 'play.webp'
+
+        button_A_image = pygame.image.load(os.path.join('assets', button_A_file))
+        button_A_image = pygame.transform.scale(button_A_image, (BUTTON_SIZE, BUTTON_SIZE))
+        self.window.blit(button_A_image, (BUTTON_A_X, BUTTON_A_Y))
+
+        pygame.draw.rect(self.window, WHITE, (NEXT_BOX_X, NEXT_BOX_Y, NEXT_WIDTH, NEXT_HEIGHT))
+        pygame.draw.rect(self.window, BLACK, (NEXT_BOX_X + 5, NEXT_BOX_Y + 5, NEXT_WIDTH - 10, NEXT_HEIGHT - 10))
+        next_text = LARGE_FONT.render(f"next", 1, WHITE)
+        self.window.blit(next_text, (NEXT_TEXT_X, NEXT_TEXT_Y))
+
+        counter = LARGE_FONT.render(f"{self.gameInfo.pair_number}", 1, WHITE)
+        self.window.blit(counter, (20, 10))
+
+        if self.gameInfo.playing_original:
+            return None
+
+        # scale
+        pygame.draw.rect(self.window, WHITE, (SCALE_X, SCALE_Y, SCALE_WIDTH, SCALE_HEIGHT))
+
+        for i in range(SENTIMENT_OPTIONS):
+            tab_center = self.height//2 - (i-SENTIMENT_OPTIONS//2)*SCALE_HEIGHT//(SENTIMENT_OPTIONS-1)
+
+            tab_y = tab_center - TAB_HEIGHT//2
+            text_y = tab_center - SMALL_FONT_SIZE//2
+
+            pygame.draw.rect(self.window, WHITE, (TAB_X, tab_y, TAB_WIDTH, TAB_HEIGHT))
+
+            scale_level = SMALL_FONT.render(f'{i-4}', 1, WHITE)
+            self.window.blit(scale_level, (SCALE_NUMBER_X, text_y))
+
+        pygame.draw.circle(self.window, WHITE,
+                           (SCALE_CENTER, self.height//2 - (self.gameInfo.similarityScore-5)*SCALE_HEIGHT//(SENTIMENT_OPTIONS-1)),
+                           SIMILARITY_INDICATOR_SIZE)
+
+        scale_max = SMALL_FONT.render(f"most preferred", 1, WHITE)
+        self.window.blit(scale_max, (SCALE_LABEL_X, SCALE_LABEL_Y_1))
+
+        scale_min = SMALL_FONT.render(f"least preferred", 1, WHITE)
+        self.window.blit(scale_min, (SCALE_LABEL_X, SCALE_LABEL_Y_2))
+
     def draw_familiarity(self):
         self.window.fill(BLACK)
 
@@ -293,6 +350,45 @@ class Game:
 
         return self.gameInfo
     
+    def loop3(self, mouse_pressed, mouse_pos):
+        if mouse_pressed:
+            self.gameInfo.similarityScore = max(min((self.height//2 - mouse_pos)*(SENTIMENT_OPTIONS-1)/SCALE_HEIGHT + 5, 9), 1)
+
+        if not pygame.mixer.music.get_busy():
+            self.gameInfo.playing_C = False
+
+        self.draw_simple_preference()
+
+        return self.gameInfo
+    
+    def next_pair_simple(self):
+        pygame.mixer.music.stop()
+
+        if self.gameInfo.playing_original:
+
+            self.gameInfo.playing_original = False
+            self.gameInfo.since_last_repeat = 0
+
+        else:
+
+            song_pair = self.gameInfo.simple_song_Order[self.gameInfo.pair_number]
+
+            self.gameInfo.similarityArray[song_pair[0], song_pair[1]] = (self.gameInfo.similarityScore - 5)
+            self.gameInfo.similarityArray[song_pair[1], song_pair[0]] = (self.gameInfo.similarityScore - 5)
+
+            self.gameInfo.similarityScore = SENTIMENT_INITIAL
+            self.gameInfo.pair_number += 1
+            self.gameInfo.since_last_repeat += 1
+
+        print(self.gameInfo.since_last_repeat)
+
+        if self.gameInfo.since_last_repeat > 3:
+            self.gameInfo.playing_original = True
+
+        # check game end
+        if self.gameInfo.pair_number >= len(self.gameInfo.simple_song_Order):
+            self.gameInfo.testing_completed = True
+    
     def next_pair(self):
         pygame.mixer.music.stop()
 
@@ -366,3 +462,20 @@ class Game:
 
         self.gameInfo.playing_B = True
         self.gameInfo.playing_A = False
+
+    def play_C(self):
+        if self.gameInfo.playing_original:
+
+            pygame.mixer.music.load(self.gameInfo.stimuli[self.gameInfo.simple_song_Order[0][0]])
+
+        else:
+
+            pygame.mixer.music.load(self.gameInfo.stimuli[self.gameInfo.simple_song_Order[self.gameInfo.pair_number][1]])
+
+        pygame.mixer.music.set_volume(0.7)
+        pygame.mixer.music.play()
+
+        if self.gameInfo.playing_C:
+            pygame.mixer.music.stop()
+
+        self.gameInfo.playing_C = True
