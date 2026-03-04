@@ -56,6 +56,10 @@ class GameInformation:
         self.similarityArray = np.zeros((num_stimuli, num_stimuli))
         self.similarityScore = SENTIMENT_INITIAL
 
+        self.started_listening = False
+        self.listened = False
+        self.rated = False
+
         self.since_last_repeat = 0
         self.playing_original = False
 
@@ -161,10 +165,11 @@ class Game:
         stimuli_B_label = LARGE_FONT.render(f"Stimuli B", 1, WHITE)
         self.window.blit(stimuli_B_label, (BUTTON_B2_X + 10, BUTTON_B2_Y - 30))
 
-        pygame.draw.rect(self.window, WHITE, (NEXT_BOX2_X, NEXT_BOX2_Y, NEXT_WIDTH, NEXT_HEIGHT))
-        pygame.draw.rect(self.window, BLACK, (NEXT_BOX2_X + 5, NEXT_BOX2_Y + 5, NEXT_WIDTH - 10, NEXT_HEIGHT - 10))
-        next_text = LARGE_FONT.render(f"next", 1, WHITE)
-        self.window.blit(next_text, (NEXT_TEXT2_X, NEXT_TEXT2_Y))
+        if (self.gameInfo.listened and self.gameInfo.playing_original) or self.gameInfo.rated:
+            pygame.draw.rect(self.window, WHITE, (NEXT_BOX2_X, NEXT_BOX2_Y, NEXT_WIDTH, NEXT_HEIGHT))
+            pygame.draw.rect(self.window, BLACK, (NEXT_BOX2_X + 5, NEXT_BOX2_Y + 5, NEXT_WIDTH - 10, NEXT_HEIGHT - 10))
+            next_text = LARGE_FONT.render(f"next", 1, WHITE)
+            self.window.blit(next_text, (NEXT_TEXT2_X, NEXT_TEXT2_Y))
 
         conditioning_prompting1 = SMALL_FONT.render(f"Click the play buttons to listen to the stimuli.", 1, WHITE)
         conditioning_prompting2 = SMALL_FONT.render(f"Move the slider at the bottom based on preference.", 1, WHITE)
@@ -213,16 +218,32 @@ class Game:
         button_A_image = pygame.transform.scale(button_A_image, (BUTTON_SIZE, BUTTON_SIZE))
         self.window.blit(button_A_image, (BUTTON_A_X, BUTTON_A_Y))
 
-        pygame.draw.rect(self.window, WHITE, (NEXT_BOX_X, NEXT_BOX_Y, NEXT_WIDTH, NEXT_HEIGHT))
-        pygame.draw.rect(self.window, BLACK, (NEXT_BOX_X + 5, NEXT_BOX_Y + 5, NEXT_WIDTH - 10, NEXT_HEIGHT - 10))
-        next_text = LARGE_FONT.render(f"next", 1, WHITE)
-        self.window.blit(next_text, (NEXT_TEXT_X, NEXT_TEXT_Y))
+        if (self.gameInfo.listened and self.gameInfo.playing_original) or self.gameInfo.rated:
+            pygame.draw.rect(self.window, WHITE, (NEXT_BOX_X, NEXT_BOX_Y, NEXT_WIDTH, NEXT_HEIGHT))
+            pygame.draw.rect(self.window, BLACK, (NEXT_BOX_X + 5, NEXT_BOX_Y + 5, NEXT_WIDTH - 10, NEXT_HEIGHT - 10))
+            next_text = LARGE_FONT.render(f"next", 1, WHITE)
+            self.window.blit(next_text, (NEXT_TEXT_X, NEXT_TEXT_Y))
 
         counter = LARGE_FONT.render(f"{self.gameInfo.pair_number}", 1, WHITE)
         self.window.blit(counter, (20, 10))
 
         if self.gameInfo.playing_original:
+            conditioning_prompting1 = SMALL_FONT.render(f"Throughout this experiment the original stimuli", 1, BLUE)
+            conditioning_prompting2 = SMALL_FONT.render(f"will be played periodically to remind you of how it sounds.", 1, BLUE)
+            self.window.blit(conditioning_prompting1, (EXPERIMENT_TEXT_X, EXPERIMENT_TEXT_Y1))
+            self.window.blit(conditioning_prompting2, (EXPERIMENT_TEXT_X, EXPERIMENT_TEXT_Y2))
             return None
+        
+        if self.gameInfo.preference:
+            keyword = "preference versus the original"
+        else:
+            keyword = "similarity to the original"
+        conditioning_prompting1 = SMALL_FONT.render(f"Click the play buttons to listen to the stimuli.", 1, WHITE)
+        conditioning_prompting2 = SMALL_FONT.render(f"Move the slider on the right based on {keyword}.", 1, WHITE)
+        conditioning_prompting3 = SMALL_FONT.render(f"Click next when complete. Try to use the full range of the scale.", 1, WHITE)
+        self.window.blit(conditioning_prompting1, (EXPERIMENT_TEXT_X, EXPERIMENT_TEXT_Y1))
+        self.window.blit(conditioning_prompting2, (EXPERIMENT_TEXT_X, EXPERIMENT_TEXT_Y2))
+        self.window.blit(conditioning_prompting3, (EXPERIMENT_TEXT_X, EXPERIMENT_TEXT_Y3))
 
         # scale
         pygame.draw.rect(self.window, WHITE, (SCALE_X, SCALE_Y, SCALE_WIDTH, SCALE_HEIGHT))
@@ -235,17 +256,27 @@ class Game:
 
             pygame.draw.rect(self.window, WHITE, (TAB_X, tab_y, TAB_WIDTH, TAB_HEIGHT))
 
-            scale_level = SMALL_FONT.render(f'{i-4}', 1, WHITE)
+            if self.gameInfo.preference:
+                scale_level = SMALL_FONT.render(f'{i-4}', 1, WHITE)
+            else:
+                scale_level = SMALL_FONT.render(f'{i+1}', 1, WHITE)
             self.window.blit(scale_level, (SCALE_NUMBER_X, text_y))
 
         pygame.draw.circle(self.window, WHITE,
                            (SCALE_CENTER, self.height//2 - (self.gameInfo.similarityScore-5)*SCALE_HEIGHT//(SENTIMENT_OPTIONS-1)),
                            SIMILARITY_INDICATOR_SIZE)
 
-        scale_max = SMALL_FONT.render(f"most preferred", 1, WHITE)
-        self.window.blit(scale_max, (SCALE_LABEL_X, SCALE_LABEL_Y_1))
+        if self.gameInfo.preference:
+            scale_max = SMALL_FONT.render(f"most preferred", 1, WHITE)
+            scale_mid = SMALL_FONT.render(f"equal to orignial", 1, WHITE)
+            scale_min = SMALL_FONT.render(f"least preferred", 1, WHITE)
+        else:
+            scale_max = SMALL_FONT.render(f"most similar", 1, WHITE)
+            scale_mid = SMALL_FONT.render(f" ", 1, WHITE)
+            scale_min = SMALL_FONT.render(f"least similar", 1, WHITE)
 
-        scale_min = SMALL_FONT.render(f"least preferred", 1, WHITE)
+        self.window.blit(scale_max, (SCALE_LABEL_X, SCALE_LABEL_Y_1))
+        self.window.blit(scale_mid, (SCALE_LABEL_X, (SCALE_LABEL_Y_2 + SCALE_LABEL_Y_1)//2))
         self.window.blit(scale_min, (SCALE_LABEL_X, SCALE_LABEL_Y_2))
 
     def draw_familiarity(self):
@@ -353,8 +384,12 @@ class Game:
     def loop3(self, mouse_pressed, mouse_pos):
         if mouse_pressed:
             self.gameInfo.similarityScore = max(min((self.height//2 - mouse_pos)*(SENTIMENT_OPTIONS-1)/SCALE_HEIGHT + 5, 9), 1)
+            self.gameInfo.rated = True
 
         if not pygame.mixer.music.get_busy():
+            if self.gameInfo.playing_C:
+                self.gameInfo.listened = True
+
             self.gameInfo.playing_C = False
 
         self.draw_simple_preference()
@@ -363,6 +398,9 @@ class Game:
     
     def next_pair_simple(self):
         pygame.mixer.music.stop()
+
+        self.gameInfo.listened = False
+        self.gameInfo.rated = False
 
         if self.gameInfo.playing_original:
 
@@ -380,9 +418,7 @@ class Game:
             self.gameInfo.pair_number += 1
             self.gameInfo.since_last_repeat += 1
 
-        print(self.gameInfo.since_last_repeat)
-
-        if self.gameInfo.since_last_repeat > 3:
+        if self.gameInfo.since_last_repeat > 4:
             self.gameInfo.playing_original = True
 
         # check game end
@@ -414,7 +450,12 @@ class Game:
     def start_familiarity(self):
         self.gameInfo.familiarity_started = True
 
-        if self.gameInfo.familiarity_number < 5 and not pygame.mixer.music.get_busy():
+        if self.gameInfo.preference:
+            familiarity_max = 2
+        else:
+            familiarity_max = 5
+
+        if self.gameInfo.familiarity_number < familiarity_max and not pygame.mixer.music.get_busy():
 
             self.gameInfo.familiarity_number += 1
 
@@ -422,14 +463,22 @@ class Game:
             pygame.mixer.music.set_volume(0.7)
             pygame.mixer.music.play()
         
-        elif self.gameInfo.familiarity_number >= 5 and not pygame.mixer.music.get_busy():
+        elif self.gameInfo.familiarity_number >= familiarity_max and not pygame.mixer.music.get_busy():
 
             self.gameInfo.familiarity_completed = True
 
     def start_conditioning(self):
         self.gameInfo.conditioning_started = True
 
-        if self.gameInfo.conditioning_number < 5 and not pygame.mixer.music.get_busy():
+        if self.gameInfo.conditioning_number == 2 and not pygame.mixer.music.get_busy():
+
+            pygame.mixer.music.load("stimuli/Bach_AI_Stimuli (super jazz).wav")
+            pygame.mixer.music.set_volume(0.7)
+            pygame.mixer.music.play()
+
+            self.gameInfo.conditioning_number += 1
+
+        elif self.gameInfo.conditioning_number < 5 and not pygame.mixer.music.get_busy():
 
             pygame.mixer.music.load(self.gameInfo.conditioning_order[self.gameInfo.conditioning_number])
             pygame.mixer.music.set_volume(0.7)

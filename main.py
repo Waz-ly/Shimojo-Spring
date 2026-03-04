@@ -154,7 +154,10 @@ class SimilarityTest:
     def play_simple_preference(self, preference=True):
         self.game.gameInfo.preference = preference
 
-        self.run_familiarity()
+        # self.run_familiarity()
+
+        # if not preference:
+        #     self.run_conditioning()
 
         clock = pygame.time.Clock()
         run = True
@@ -172,7 +175,8 @@ class SimilarityTest:
                     if (pygame.mouse.get_pos()[0] < NEXT_CENTER_X + NEXT_WIDTH//2
                         and pygame.mouse.get_pos()[1] < NEXT_CENTER_Y + NEXT_HEIGHT//2
                         and pygame.mouse.get_pos()[1] > NEXT_CENTER_Y - NEXT_HEIGHT//2
-                        and pygame.mouse.get_pos()[0] > NEXT_CENTER_X - NEXT_WIDTH//2):
+                        and pygame.mouse.get_pos()[0] > NEXT_CENTER_X - NEXT_WIDTH//2
+                        and ((gameInfo.listened and gameInfo.playing_original) or gameInfo.rated)):
                         
                         self.game.next_pair_simple()
 

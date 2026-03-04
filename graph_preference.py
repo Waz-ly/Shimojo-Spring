@@ -1,8 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-Wesley_preference = np.loadtxt('preference_scores/Wesley.csv', delimiter=',', dtype=str)
-Wesley_familiarity = np.loadtxt('similarity_score_radial/Wesley.csv', delimiter=',', dtype=str)
+Wesley_preference = np.loadtxt('preference_scores_radial/Wesley.csv', delimiter=',', dtype=str)
+Wesley_familiarity = np.loadtxt('similarity_scores_radial(50)/Wesley.csv', delimiter=',', dtype=str)
 
 labels = Wesley_preference[2:, 0]
 print(labels)

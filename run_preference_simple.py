@@ -7,7 +7,5 @@ window = pygame.display.set_mode((WIDTH, HEIGHT))
 # for similarity set to False, for preference set to true
 preference = False
 
-pygame.mixer.init()
-
 test = SimilarityTest(window, WIDTH, HEIGHT)
 test.play_simple_preference(preference)
