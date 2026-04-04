@@ -154,10 +154,10 @@ class SimilarityTest:
     def play_simple_preference(self, preference=True):
         self.game.gameInfo.preference = preference
 
-        # self.run_familiarity()
+        self.run_familiarity()
 
-        # if not preference:
-        #     self.run_conditioning()
+        if not preference:
+            self.run_conditioning()
 
         clock = pygame.time.Clock()
         run = True

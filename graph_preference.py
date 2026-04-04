@@ -4,14 +4,23 @@ import numpy as np
 Wesley_preference = np.loadtxt('preference_scores_radial/Wesley.csv', delimiter=',', dtype=str)
 Wesley_familiarity = np.loadtxt('similarity_scores_radial(50)/Wesley.csv', delimiter=',', dtype=str)
 
+Shimojo_preference = np.loadtxt('preference_scores_radial/Shimojo.csv', delimiter=',', dtype=str)
+Shimojo_familiarity = np.loadtxt('similarity_scores_radial(50)/Shimojo (note metal).csv', delimiter=',', dtype=str)
+
+Matthias_preference = np.loadtxt('preference_scores_radial/Matthias.csv', delimiter=',', dtype=str)
+Matthias_familiarity = np.loadtxt('similarity_scores_radial(50)/Matthias.csv', delimiter=',', dtype=str)
+
 labels = Wesley_preference[2:, 0]
 print(labels)
 
-if not np.array_equal(labels, Wesley_familiarity[2:, 0]):
+if not np.array_equal(labels, Shimojo_preference[2:, 0]):
     print("failed to match files")
 
-preference = np.array(Wesley_preference[2:, 1], dtype=float)
-familiarity = 10 - np.array(Wesley_familiarity[2:, 1], dtype=float)
+if not np.array_equal(labels, Matthias_preference[2:, 0]):
+    print("failed to match files")
+
+preference = (np.array(Wesley_preference[2:, 1], dtype=float) + np.array(Shimojo_preference[2:, 1], dtype=float) + np.array(Matthias_preference[2:, 1], dtype=float)) / 3
+familiarity = 10 + (- np.array(Wesley_familiarity[2:, 1], dtype=float) - np.array(Shimojo_familiarity[2:, 1], dtype=float) - np.array(Matthias_familiarity[2:, 1], dtype=float))/3
 
 fig = plt.figure()
 ax = fig.add_subplot()
