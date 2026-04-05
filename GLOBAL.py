@@ -6,6 +6,7 @@ SENTIMENT_INITIAL = 5
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 BLUE = (100, 150, 255)
+RED = (255, 0, 0)
 
 pygame.init()
 pygame.font.init()

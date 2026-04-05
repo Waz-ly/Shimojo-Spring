@@ -2,7 +2,9 @@ import pygame
 from similarity_gui import SimilarityTest
 from GLOBAL import *
 
-window = pygame.display.set_mode((WIDTH, HEIGHT))
+if __name__ == "__main__":
 
-test = SimilarityTest(window, WIDTH, HEIGHT)
-test.play_self()
+    window = pygame.display.set_mode((WIDTH, HEIGHT))
+
+    test = SimilarityTest(window, WIDTH, HEIGHT)
+    test.play_self()
