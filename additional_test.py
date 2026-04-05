@@ -7,5 +7,6 @@ if __name__ == "__main__":
     window = pygame.display.set_mode((WIDTH, HEIGHT))
 
     test = SimilarityTest(window, WIDTH, HEIGHT)
+    test.additional_mode()
     test.gui()
     test.save()

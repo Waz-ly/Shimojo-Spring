@@ -3,6 +3,7 @@ import pygame
 import os
 from GLOBAL import *
 import random
+from copy import deepcopy
 
 pygame.init()
 
@@ -32,12 +33,8 @@ class GameInformation:
         self.listened = False
         self.rated = False
 
-        self.since_last_repeat = 0
-        self.playing_original = False
-
         self.playing_A = False
         self.playing_B = False
-        self.playing_C = False
 
 class Game:
     def __init__(self, window, width, height):
@@ -49,6 +46,29 @@ class Game:
         self.whitesTurn = True
 
         pygame.mixer.init()
+
+    def additional_mode(self, original_labels):
+        try:
+            results = np.loadtxt('additional_results.csv', delimiter=',', dtype=str)
+            labels = results[1:,0]
+        except:
+            labels = []
+    
+        self.gameInfo.stimuli = deepcopy(original_labels)
+        for f in os.listdir("additional_stimuli"):
+            if not f[0] == '.' and not os.path.basename(f) in labels:
+                self.gameInfo.stimuli.append("additional_stimuli/" + f)
+
+        self.gameInfo.songOrder = []
+
+        for i in np.arange(len(original_labels)):
+            for j in np.arange(len(self.gameInfo.stimuli) - len(original_labels)):
+                self.gameInfo.songOrder.append([i, j + len(original_labels)])
+                random.shuffle(self.gameInfo.songOrder[-1])
+
+        random.shuffle(self.gameInfo.songOrder)
+
+        self.gameInfo.similarityArray = np.zeros((len(self.gameInfo.stimuli), len(self.gameInfo.stimuli)))
 
     def draw(self):
         self.window.fill(BLACK)

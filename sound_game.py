@@ -41,10 +41,6 @@ class Game:
 
         for index, point in enumerate(self.points):
             if not self.bounding_triangle is None and point in self.bounding_triangle:
-                # index = 0 if np.array_equal(self.bounding_triangle[0], point) else (1 if np.array_equal(self.bounding_triangle[1], point) else 2)
-                # weights = self.get_weights(self.selection_point, self.bounding_triangle[0], self.bounding_triangle[1], self.bounding_triangle[2])
-                # label = str(weights[index])
-
                 color = BLUE
                 label = self.labels[index]
                 coords = 15 + (HEIGHT - 30) * point
@@ -130,8 +126,12 @@ class Game:
 
                     if os.path.exists("stimuli/" + self.labels[index] + ".wav"):
                         file = "stimuli/" + self.labels[index] + ".wav"
-                    else:
+                    elif os.path.exists("stimuli/" + self.labels[index] + ".mp3"):
                         file = "stimuli/" + self.labels[index] + ".mp3"
+                    elif os.path.exists("additional_stimuli/" + self.labels[index] + ".wav"):
+                        file = "additional_stimuli/" + self.labels[index] + ".wav"
+                    elif os.path.exists("additional_stimuli/" + self.labels[index] + ".mp3"):
+                        file = "additional_stimuli/" + self.labels[index] + ".mp3"
 
                     audio_chunk, _ = librosa.load(file, sr=SAMPLE_RATE)
                     audio_chunk /= np.max(np.abs(audio_chunk))

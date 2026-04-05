@@ -3,6 +3,8 @@ from similarity_game import Game
 import numpy as np
 from GLOBAL import *
 import os
+import sklearn
+import sklearn.metrics
 
 class SimilarityTest:
     def __init__(self, window, width, height):
@@ -10,8 +12,51 @@ class SimilarityTest:
         self.lastMoves = []
         self.lastLastMoves = []
 
-    # function used to play against one's self
-    def play_self(self):
+    def furthest_point_anchors(self, embedding, n_anchors):
+        chosen = [0]
+        for _ in range(n_anchors - 1):
+            dists = np.min(
+                sklearn.metrics.pairwise_distances(embedding, embedding[chosen]), axis=1
+            )
+            chosen.append(np.argmax(dists))
+        return np.array(chosen)
+
+    def additional_mode(self):
+        result = np.loadtxt('result.csv', delimiter=',', dtype=str)
+
+        labels = result[1:,0]
+        data = np.array(result[1:,1:], dtype=float)
+
+        data = np.where(data>0.5, 1/data, np.zeros_like(data))
+
+        mds = sklearn.manifold.MDS(
+            n_components=2,
+            max_iter=3000,
+            eps=1e-9,
+            n_init=1,
+            random_state=1,
+            metric="precomputed",
+            n_jobs=1,
+            init="classical_mds",
+        )
+        X_mds = mds.fit(data).embedding_
+
+        X_mds[:, 0] -= np.min(X_mds[:, 0])
+        X_mds[:, 1] -= np.min(X_mds[:, 1])
+        X_mds /= np.maximum(np.max(X_mds[:, 0]), np.max(X_mds[:, 1]))
+
+        chosen = labels[self.furthest_point_anchors(X_mds, 20)]
+        chosen_files = []
+
+        for label in chosen:
+            if os.path.exists("stimuli/" + label + ".wav"):
+                chosen_files.append("stimuli/" + label + ".wav")
+            else:
+                chosen_files.append("stimuli/" + label + ".mp3")
+
+        self.game.additional_mode(chosen_files)
+
+    def gui(self):
         clock = pygame.time.Clock()
         run = True
         pressed = False
@@ -64,6 +109,7 @@ class SimilarityTest:
 
             pygame.display.update()
 
+    def save(self):
         stimuli_modification = []
         stimuli_files = self.game.gameInfo.stimuli
         for file in stimuli_files:
