@@ -74,15 +74,11 @@ class Game:
         if self.gameInfo.rated:
             pygame.draw.rect(self.window, WHITE, (NEXT_BOX_X, NEXT_BOX_Y, NEXT_WIDTH, NEXT_HEIGHT))
             pygame.draw.rect(self.window, BLACK, (NEXT_BOX_X + 5, NEXT_BOX_Y + 5, NEXT_WIDTH - 10, NEXT_HEIGHT - 10))
-            next_text = LARGE_FONT.render(f"next", 1, WHITE)
-            self.window.blit(next_text, (NEXT_TEXT_X, NEXT_TEXT_Y))
+            LARGE_FONT.render_to(self.window, (NEXT_TEXT_X, NEXT_TEXT_Y), f"next", WHITE)
 
-        conditioning_prompting1 = SMALL_FONT.render(f"Click the play buttons to listen to the stimuli.", 1, WHITE)
-        conditioning_prompting2 = SMALL_FONT.render(f"Move the slider on the right based on the stimuli's similarity.", 1, WHITE)
-        conditioning_prompting3 = SMALL_FONT.render(f"Click next when complete. Try to use the full range of the scale.", 1, WHITE)
-        self.window.blit(conditioning_prompting1, (EXPERIMENT_TEXT_X, EXPERIMENT_TEXT_Y1))
-        self.window.blit(conditioning_prompting2, (EXPERIMENT_TEXT_X, EXPERIMENT_TEXT_Y2))
-        self.window.blit(conditioning_prompting3, (EXPERIMENT_TEXT_X, EXPERIMENT_TEXT_Y3))
+        SMALL_FONT.render_to(self.window, (EXPERIMENT_TEXT_X, EXPERIMENT_TEXT_Y1), f"Click the play buttons to listen to the stimuli.", WHITE)
+        SMALL_FONT.render_to(self.window, (EXPERIMENT_TEXT_X, EXPERIMENT_TEXT_Y2), f"Move the slider on the right based on the stimuli's similarity.", WHITE)
+        SMALL_FONT.render_to(self.window, (EXPERIMENT_TEXT_X, EXPERIMENT_TEXT_Y3), f"Click next when complete. Try to use the full range of the scale.", WHITE)
 
         # scale
         pygame.draw.rect(self.window, WHITE, (SCALE_X, SCALE_Y, SCALE_WIDTH, SCALE_HEIGHT))
@@ -95,21 +91,16 @@ class Game:
 
             pygame.draw.rect(self.window, WHITE, (TAB_X, tab_y, TAB_WIDTH, TAB_HEIGHT))
 
-            scale_level = SMALL_FONT.render(f'{i+1}', 1, WHITE)
-            self.window.blit(scale_level, (SCALE_NUMBER_X, text_y))
+            SMALL_FONT.render_to(self.window, (SCALE_NUMBER_X, text_y), f'{i+1}', WHITE)
 
         pygame.draw.circle(self.window, WHITE,
                            (SCALE_CENTER, self.height//2 - (self.gameInfo.similarityScore-5)*SCALE_HEIGHT//(SENTIMENT_OPTIONS-1)),
                            SIMILARITY_INDICATOR_SIZE)
 
-        scale_max = SMALL_FONT.render(f"most similar", 1, WHITE)
-        self.window.blit(scale_max, (SCALE_LABEL_X, SCALE_LABEL_Y_1))
+        SMALL_FONT.render_to(self.window, (SCALE_LABEL_X, SCALE_LABEL_Y_1), f"most similar", WHITE)
+        SMALL_FONT.render_to(self.window, (SCALE_LABEL_X, SCALE_LABEL_Y_2), f"least similar", WHITE)
 
-        scale_min = SMALL_FONT.render(f"least similar", 1, WHITE)
-        self.window.blit(scale_min, (SCALE_LABEL_X, SCALE_LABEL_Y_2))
-
-        counter = LARGE_FONT.render(f"{self.gameInfo.pair_number}", 1, WHITE)
-        self.window.blit(counter, (20, 10))
+        LARGE_FONT.render_to(self.window, (20, 10), f"{self.gameInfo.pair_number}", WHITE)
 
     def loop(self, mouse_pressed, mouse_pos):
         if mouse_pressed:

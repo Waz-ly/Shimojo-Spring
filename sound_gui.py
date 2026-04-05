@@ -3,8 +3,8 @@ from sound_game import Game
 from GLOBAL import *
 
 class SoundGUI:
-    def __init__(self, window, width, height, points):
-        self.game = Game(window, width, height, points)
+    def __init__(self, window, width, height, points, labels):
+        self.game = Game(window, width, height, points, labels)
 
     # function used to play against one's self
     def play_self(self):
@@ -29,6 +29,11 @@ class SoundGUI:
                         and 15 <= pygame.mouse.get_pos()[1] <= HEIGHT - 15):
 
                         self.game.new_selection_point(pygame.mouse.get_pos())
+
+                    if (HEIGHT + 10 <= pygame.mouse.get_pos()[0] <= HEIGHT + 10 + BUTTON_SIZE
+                        and 10 <= pygame.mouse.get_pos()[1] <= 10 + BUTTON_SIZE):
+
+                        self.game.toggle_play()
                 
             self.game.loop()
             pygame.display.update()

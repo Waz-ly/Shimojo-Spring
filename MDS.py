@@ -1,7 +1,7 @@
+import pygame
 import sklearn
 import numpy as np
 import matplotlib.pyplot as plt
-import pygame
 from sound_gui import SoundGUI
 from GLOBAL import *
 
@@ -46,13 +46,15 @@ def calculate_MDS():
 
     plt.show()
 
-    return X_mds
+    return X_mds, labels
 
 if __name__ == "__main__":
 
-    results = calculate_MDS()
+    results, labels = calculate_MDS()
 
+    pygame.mixer.pre_init(SAMPLE_RATE, channels=1)
+    pygame.init()
     window = pygame.display.set_mode((WIDTH, HEIGHT))
 
-    sound_gui = SoundGUI(window, WIDTH, HEIGHT, results)
+    sound_gui = SoundGUI(window, WIDTH, HEIGHT, results, labels)
     sound_gui.play_self()
