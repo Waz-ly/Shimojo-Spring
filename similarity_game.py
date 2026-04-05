@@ -50,13 +50,13 @@ class Game:
     def additional_mode(self, original_labels):
         try:
             results = np.loadtxt('additional_results.csv', delimiter=',', dtype=str)
-            labels = results[1:,0]
+            labels = results[21:,0]
         except:
             labels = []
     
         self.gameInfo.stimuli = deepcopy(original_labels)
         for f in os.listdir("additional_stimuli"):
-            if not f[0] == '.' and not os.path.basename(f) in labels:
+            if not f[0] == '.' and not os.path.splitext(f)[0] in labels:
                 self.gameInfo.stimuli.append("additional_stimuli/" + f)
 
         self.gameInfo.songOrder = []

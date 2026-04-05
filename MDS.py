@@ -28,23 +28,25 @@ def calculate_MDS():
 
     X_mds[:, 0] -= np.min(X_mds[:, 0])
     X_mds[:, 1] -= np.min(X_mds[:, 1])
-    X_mds /= np.maximum(np.max(X_mds[:, 0]), np.max(X_mds[:, 1]))
+    scaling_factor = 1/np.maximum(np.max(X_mds[:, 0]), np.max(X_mds[:, 1]))
+    X_mds *= scaling_factor
 
     # --------------
 
     additional_results = np.loadtxt('additional_results.csv', delimiter=',', dtype=str)
 
-    original_labels = additional_results[1:21,0]
-    additional_labels = additional_results[21:,0]
-    data = np.array(additional_results[21:,1:21], dtype=float)
+    original_labels = additional_results[0,1:21]
+    additional_labels = additional_results[1:,0]
+    data = np.array(additional_results[1:,1:21], dtype=float)
 
-    original_points = []
+    original_points = [None] * 20
     for index, label in enumerate(labels):
-        if label in original_labels:
-            original_points.append(X_mds[index])
+        for points_index, point_label in enumerate(original_labels):
+            if label == point_label:
+                original_points[points_index] = X_mds[index]
 
     for index, point in enumerate(data):
-        known_distances = 1/point
+        known_distances = scaling_factor/point
 
         def stress(coords_flat):
             coords = coords_flat.reshape(1, 2)
@@ -63,6 +65,11 @@ def calculate_MDS():
         labels = np.concatenate([labels, [additional_labels[index]]])
 
     # --------------
+
+    X_mds[:, 0] -= np.min(X_mds[:, 0])
+    X_mds[:, 1] -= np.min(X_mds[:, 1])
+    scaling_factor = 1/np.maximum(np.max(X_mds[:, 0]), np.max(X_mds[:, 1]))
+    X_mds *= scaling_factor
 
     fig = plt.figure()
     ax = fig.add_subplot()
