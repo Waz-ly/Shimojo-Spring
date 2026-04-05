@@ -1,5 +1,5 @@
 import pygame
-from main import SimilarityTest
+from similarity_gui import SimilarityTest
 from GLOBAL import *
 
 window = pygame.display.set_mode((WIDTH, HEIGHT))

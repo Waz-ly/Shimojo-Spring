@@ -1,17 +1,14 @@
 import sklearn
 import numpy as np
 import matplotlib.pyplot as plt
+import pygame
 
-Wesley_data = np.loadtxt('similarity_scores(20)/Wesley.csv', delimiter=',', dtype=str)
-Trevor_data = np.loadtxt('similarity_scores/Trevor.csv', delimiter=',', dtype=str)
+result = np.loadtxt('results/result-0.csv', delimiter=',', dtype=str)
 
-labels = Wesley_data[1:,0]
-# data = (np.array(Wesley_data[1:,1:], dtype=float) + np.array(Trevor_data[1:,1:], dtype=float))/2
-
-data = np.array(Wesley_data[1:,1:], dtype=float)
+labels = result[1:,0]
+data = np.array(result[1:,1:], dtype=float)
 
 data = np.where(data>0.5, 1/data, np.zeros_like(data))
-print(data)
 
 mds = sklearn.manifold.MDS(
     n_components=2,

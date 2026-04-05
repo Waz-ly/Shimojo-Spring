@@ -1,5 +1,5 @@
 import pygame
-from Game import Game
+from similarity_game import Game
 import numpy as np
 from GLOBAL import *
 import os
