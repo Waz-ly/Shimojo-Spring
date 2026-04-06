@@ -45,7 +45,7 @@ class SimilarityTest:
         X_mds[:, 1] -= np.min(X_mds[:, 1])
         X_mds /= np.maximum(np.max(X_mds[:, 0]), np.max(X_mds[:, 1]))
 
-        chosen = labels[self.furthest_point_anchors(X_mds, 20)]
+        chosen = labels[self.furthest_point_anchors(X_mds, 10)]
         chosen_files = []
 
         for label in chosen:

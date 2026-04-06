@@ -50,7 +50,7 @@ class Game:
     def additional_mode(self, original_labels):
         try:
             results = np.loadtxt('additional_results.csv', delimiter=',', dtype=str)
-            labels = results[21:,0]
+            labels = results[11:,0]
         except:
             labels = []
     

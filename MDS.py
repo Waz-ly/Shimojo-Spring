@@ -35,11 +35,11 @@ def calculate_MDS():
 
     additional_results = np.loadtxt('additional_results.csv', delimiter=',', dtype=str)
 
-    original_labels = additional_results[0,1:21]
+    original_labels = additional_results[0,1:11]
     additional_labels = additional_results[1:,0]
-    data = np.array(additional_results[1:,1:21], dtype=float)
+    data = np.array(additional_results[1:,1:11], dtype=float)
 
-    original_points = [None] * 20
+    original_points = [None] * 10
     for index, label in enumerate(labels):
         for points_index, point_label in enumerate(original_labels):
             if label == point_label:
