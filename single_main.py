@@ -5,7 +5,7 @@ from GLOBAL import *
 if __name__ == "__main__":
 
     window = pygame.display.set_mode((WIDTH, HEIGHT))
-    pygame.display.set_caption("familiarity")
+    pygame.display.set_caption("preference")
 
     test = ScoreTest(window, WIDTH, HEIGHT)
     test.gui()

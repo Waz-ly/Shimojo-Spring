@@ -33,7 +33,7 @@ def calculate_MDS():
 
     # --------------
 
-    additional_results = np.loadtxt('additional_results.csv', delimiter=',', dtype=str)
+    additional_results = np.loadtxt('results_additional.csv', delimiter=',', dtype=str)
 
     original_labels = additional_results[0,1:11]
     additional_labels = additional_results[1:,0]

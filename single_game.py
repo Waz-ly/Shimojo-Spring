@@ -82,8 +82,8 @@ class Game:
                            (SCALE_CENTER, self.height//2 - (self.gameInfo.similarityScore-5)*SCALE_HEIGHT//(SENTIMENT_OPTIONS-1)),
                            SIMILARITY_INDICATOR_SIZE)
 
-        SMALL_FONT.render_to(self.window, (SCALE_LABEL_X, SCALE_LABEL_Y_1), f"most similar", WHITE)
-        SMALL_FONT.render_to(self.window, (SCALE_LABEL_X, SCALE_LABEL_Y_2), f"least similar", WHITE)
+        SMALL_FONT.render_to(self.window, (SCALE_LABEL_X, SCALE_LABEL_Y_1), f"most ''", WHITE)
+        SMALL_FONT.render_to(self.window, (SCALE_LABEL_X, SCALE_LABEL_Y_2), f"least ''", WHITE)
 
         LARGE_FONT.render_to(self.window, (20, 10), f"{self.gameInfo.song_number}", WHITE)
 
