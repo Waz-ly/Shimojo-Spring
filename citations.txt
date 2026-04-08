@@ -1,2 +1,4 @@
 https://medium.com/data-science/neural-network-embeddings-explained-4d028e6f0526
 
+https://openl3.readthedocs.io/en/latest/tutorial.html#using-the-library
+

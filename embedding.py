@@ -20,11 +20,13 @@ for file in os.listdir("additional_stimuli"):
     labels.append(os.path.basename(file))
 
 embeddings = []
+embedding_lengths = []
 for file in audio_files:
     audio, samplerate = librosa.load(file, duration=5)
     audio = np.pad(audio, (0, 5 * samplerate - len(audio)))
-    embedding, timestamp = openl3.get_audio_embedding(audio, samplerate)
+    embedding, timestamp = openl3.get_audio_embedding(audio, samplerate, content_type="music", embedding_size=512)
     embeddings.append(embedding.flatten())
+    embedding_lengths.append(len(embedding))
 
 initial_pca = PCA()
 initial_pca.fit(embeddings)
@@ -51,5 +53,7 @@ for (x, y), label in zip(X_embedded, labels):
         ha="left",
         fontsize=9
     )
+
+plt.savefig("embeddings.png")
 
 plt.show()
