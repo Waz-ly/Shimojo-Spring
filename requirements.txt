@@ -1,3 +1,4 @@
 openl3 # installs numpy, scipy, scikit-learn, librosa
 matplotlib
 pygame
+torch

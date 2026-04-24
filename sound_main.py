@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from sound_gui import SoundGUI
 from GLOBAL import *
 
-def calculate_MDS():
+def calculate_MDS(plot=True):
     result = np.loadtxt('result.csv', delimiter=',', dtype=str)
 
     labels = result[1:,0]
@@ -71,22 +71,23 @@ def calculate_MDS():
     scaling_factor = 1/np.maximum(np.max(X_mds[:, 0]), np.max(X_mds[:, 1]))
     X_mds *= scaling_factor
 
-    fig = plt.figure()
-    ax = fig.add_subplot()
+    if plot:
+        fig = plt.figure()
+        ax = fig.add_subplot()
 
-    plt.scatter(X_mds[:, 0], X_mds[:, 1], color="turquoise", s=100, lw=0, label="MDS")
+        plt.scatter(X_mds[:, 0], X_mds[:, 1], color="turquoise", s=100, lw=0, label="MDS")
 
-    for (x, y), label in zip(X_mds, labels):
-        plt.annotate(
-            label,
-            (x, y),
-            textcoords="offset points",
-            xytext=(5, 5),
-            ha="left",
-            fontsize=9
-        )
+        for (x, y), label in zip(X_mds, labels):
+            plt.annotate(
+                label,
+                (x, y),
+                textcoords="offset points",
+                xytext=(5, 5),
+                ha="left",
+                fontsize=9
+            )
 
-    plt.show()
+        plt.show()
 
     return X_mds, labels
 
