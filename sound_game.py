@@ -128,10 +128,10 @@ class Game:
                         file = "stimuli/" + self.labels[index] + ".wav"
                     elif os.path.exists("stimuli/" + self.labels[index] + ".mp3"):
                         file = "stimuli/" + self.labels[index] + ".mp3"
-                    elif os.path.exists("additional_stimuli/" + self.labels[index] + ".wav"):
-                        file = "additional_stimuli/" + self.labels[index] + ".wav"
-                    elif os.path.exists("additional_stimuli/" + self.labels[index] + ".mp3"):
-                        file = "additional_stimuli/" + self.labels[index] + ".mp3"
+                    elif os.path.exists("stimuli_additional1/" + self.labels[index] + ".wav"):
+                        file = "stimuli_additional1/" + self.labels[index] + ".wav"
+                    elif os.path.exists("stimuli_additional1/" + self.labels[index] + ".mp3"):
+                        file = "stimuli_additional1/" + self.labels[index] + ".mp3"
 
                     audio_chunk, _ = librosa.load(file, sr=SAMPLE_RATE)
                     audio_chunk /= np.max(np.abs(audio_chunk))

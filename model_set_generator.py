@@ -10,7 +10,7 @@ def get_test_set(seed=0, test_set_size=10):
 
         files.append(file)
 
-    for file in os.listdir("additional_stimuli"):
+    for file in os.listdir("stimuli_additional1"):
         if file[0] == ".":
             continue
 

@@ -3,30 +3,56 @@ import pygame
 import os
 from GLOBAL import *
 import random
-from copy import deepcopy
+from sound_main import calculate_MDS
 
 pygame.init()
 
 class GameInformation:
     def __init__(self):
+        mds, labels = calculate_MDS(plot=False)
+
+        test_point = "harp"
+        test_point_coords = mds[labels.tolist().index(test_point)]
+
+        furthest_label = None
+        furthest_coord = test_point_coords
+
+        for coord, label in zip(mds, labels):
+            if np.linalg.norm(test_point_coords - coord) > np.linalg.norm(test_point_coords - furthest_coord):
+                furthest_coord = coord
+                furthest_label = label
+        
+        furthest_labels = []
+        for coord, label in zip(mds, labels):
+            if np.linalg.norm(furthest_coord - coord) < 0.3:
+                furthest_labels.append(label)
+        furthest_labels.append(test_point)
+
         self.stimuli = []
-        for f in os.listdir("stimuli"):
-            if not f[0] == '.':
-                self.stimuli.append("stimuli/" + f)
+        for label in furthest_labels:
+            print(label)
+            if os.path.isfile("stimuli/" + label + ".wav"):
+                self.stimuli.append("stimuli/" + label + ".wav")
+            elif os.path.isfile("stimuli/" + label + ".mp3"):
+                self.stimuli.append("stimuli/" + label + ".mp3")
+            elif os.path.isfile("stimuli_additional1/" + label + ".wav"):
+                self.stimuli.append("stimuli_additional1/" + label + ".wav")
+            elif os.path.isfile("stimuli_additional1/" + label + ".mp3"):
+                self.stimuli.append("stimuli_additional1/" + label + ".mp3")
+            else:
+                raise Exception("stimuli not found")
+            
         num_stimuli = len(self.stimuli)
 
         self.songOrder = []
-
-        for i in range(num_stimuli):
-            for j in range(i):
-                self.songOrder.append([i, j])
-                random.shuffle(self.songOrder[-1])
-
+        for i in range(len(self.stimuli) - 1):
+            self.songOrder.append(i)
         random.shuffle(self.songOrder)
+        self.songOrder.append(len(self.stimuli) - 1)
 
         self.testing_completed = False
-        self.pair_number = 0
-        self.similarityArray = np.zeros((num_stimuli, num_stimuli))
+        self.song_number = 0
+        self.similarityArray = np.zeros(num_stimuli)
         self.similarityScore = SENTIMENT_INITIAL
 
         self.started_listening = False
@@ -43,36 +69,8 @@ class Game:
         self.window = window
 
         self.gameInfo = GameInformation()
-        self.whitesTurn = True
 
         pygame.mixer.init()
-
-    def additional_mode(self, original_labels):
-        try:
-            results = np.loadtxt('results_additional.csv', delimiter=',', dtype=str)
-            labels = results[1:,0]
-        except:
-            labels = []
-    
-        self.gameInfo.stimuli = deepcopy(original_labels)
-
-        stimuli_set_number = 1
-        while os.path.exists("stimuli_additional" + str(stimuli_set_number)):
-
-            for f in os.listdir("stimuli_additional" + str(stimuli_set_number)):
-                if not f[0] == '.' and not os.path.splitext(f)[0] in labels:
-                    self.gameInfo.stimuli.append("stimuli_additional" + str(stimuli_set_number) + "/" + f)
-
-        self.gameInfo.songOrder = []
-
-        for i in np.arange(len(original_labels)):
-            for j in np.arange(len(self.gameInfo.stimuli) - len(original_labels)):
-                self.gameInfo.songOrder.append([i, j + len(original_labels)])
-                random.shuffle(self.gameInfo.songOrder[-1])
-
-        random.shuffle(self.gameInfo.songOrder)
-
-        self.gameInfo.similarityArray = np.zeros((len(self.gameInfo.stimuli), len(self.gameInfo.stimuli)))
 
     def draw(self):
         self.window.fill(BLACK)
@@ -85,15 +83,6 @@ class Game:
         button_A_image = pygame.image.load(os.path.join('assets', button_A_file))
         button_A_image = pygame.transform.scale(button_A_image, (BUTTON_SIZE, BUTTON_SIZE))
         self.window.blit(button_A_image, (BUTTON_A_X, BUTTON_A_Y))
-        
-        if self.gameInfo.playing_B:
-            button_B_file = 'pause.webp'
-        else:
-            button_B_file = 'play.webp'
-
-        button_B_image = pygame.image.load(os.path.join('assets', button_B_file))
-        button_B_image = pygame.transform.scale(button_B_image, (BUTTON_SIZE, BUTTON_SIZE))
-        self.window.blit(button_B_image, (BUTTON_B_X, BUTTON_A_Y))
 
         if self.gameInfo.rated:
             pygame.draw.rect(self.window, WHITE, (NEXT_BOX_X, NEXT_BOX_Y, NEXT_WIDTH, NEXT_HEIGHT))
@@ -101,7 +90,7 @@ class Game:
             LARGE_FONT.render_to(self.window, (NEXT_TEXT_X, NEXT_TEXT_Y), f"next", WHITE)
 
         SMALL_FONT.render_to(self.window, (EXPERIMENT_TEXT_X, EXPERIMENT_TEXT_Y1), f"Click the play buttons to listen to the stimuli.", WHITE)
-        SMALL_FONT.render_to(self.window, (EXPERIMENT_TEXT_X, EXPERIMENT_TEXT_Y2), f"Move the slider on the right based on the stimuli's similarity.", WHITE)
+        SMALL_FONT.render_to(self.window, (EXPERIMENT_TEXT_X, EXPERIMENT_TEXT_Y2), f"Move the slider on the right based on the stimuli's *score*.", WHITE)
         SMALL_FONT.render_to(self.window, (EXPERIMENT_TEXT_X, EXPERIMENT_TEXT_Y3), f"Click next when complete. Try to use the full range of the scale.", WHITE)
 
         # scale
@@ -121,10 +110,10 @@ class Game:
                            (SCALE_CENTER, self.height//2 - (self.gameInfo.similarityScore-5)*SCALE_HEIGHT//(SENTIMENT_OPTIONS-1)),
                            SIMILARITY_INDICATOR_SIZE)
 
-        SMALL_FONT.render_to(self.window, (SCALE_LABEL_X, SCALE_LABEL_Y_1), f"most similar", WHITE)
-        SMALL_FONT.render_to(self.window, (SCALE_LABEL_X, SCALE_LABEL_Y_2), f"least similar", WHITE)
+        SMALL_FONT.render_to(self.window, (SCALE_LABEL_X, SCALE_LABEL_Y_1), f"most ''", WHITE)
+        SMALL_FONT.render_to(self.window, (SCALE_LABEL_X, SCALE_LABEL_Y_2), f"least ''", WHITE)
 
-        LARGE_FONT.render_to(self.window, (20, 10), f"{self.gameInfo.pair_number}", WHITE)
+        LARGE_FONT.render_to(self.window, (20, 10), f"{self.gameInfo.song_number}", WHITE)
 
     def loop(self, mouse_pressed, mouse_pos):
         if mouse_pressed:
@@ -133,7 +122,6 @@ class Game:
 
         if not pygame.mixer.music.get_busy():
             self.gameInfo.playing_A = False
-            self.gameInfo.playing_B = False
 
         self.draw()
 
@@ -146,19 +134,18 @@ class Game:
         self.gameInfo.rated = False
         pygame.mixer.music.stop()
 
-        song_pair = self.gameInfo.songOrder[self.gameInfo.pair_number]
-        self.gameInfo.similarityArray[song_pair[0], song_pair[1]] = self.gameInfo.similarityScore
-        self.gameInfo.similarityArray[song_pair[1], song_pair[0]] = self.gameInfo.similarityScore
+        song_number = self.gameInfo.songOrder[self.gameInfo.song_number]
+        self.gameInfo.similarityArray[song_number] = self.gameInfo.similarityScore
 
         self.gameInfo.similarityScore = SENTIMENT_INITIAL
-        self.gameInfo.pair_number += 1
+        self.gameInfo.song_number += 1
 
         # check game end
-        if self.gameInfo.pair_number >= len(self.gameInfo.songOrder):
+        if self.gameInfo.song_number >= len(self.gameInfo.songOrder):
             self.gameInfo.testing_completed = True
 
     def play_A(self):
-        pygame.mixer.music.load(self.gameInfo.stimuli[self.gameInfo.songOrder[self.gameInfo.pair_number][0]])
+        pygame.mixer.music.load(self.gameInfo.stimuli[self.gameInfo.songOrder[self.gameInfo.song_number]])
         pygame.mixer.music.set_volume(0.7)
         pygame.mixer.music.play()
 
@@ -167,14 +154,3 @@ class Game:
 
         self.gameInfo.playing_A = True
         self.gameInfo.playing_B = False
-    
-    def play_B(self):
-        pygame.mixer.music.load(self.gameInfo.stimuli[self.gameInfo.songOrder[self.gameInfo.pair_number][1]])
-        pygame.mixer.music.set_volume(0.7)
-        pygame.mixer.music.play()
-
-        if self.gameInfo.playing_B:
-            pygame.mixer.music.stop()
-
-        self.gameInfo.playing_B = True
-        self.gameInfo.playing_A = False

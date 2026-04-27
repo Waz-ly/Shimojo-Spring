@@ -12,9 +12,9 @@ class GameInformation:
         for f in os.listdir("stimuli"):
             if not f[0] == '.':
                 self.stimuli.append("stimuli/" + f)
-        for f in os.listdir("additional_stimuli"):
+        for f in os.listdir("stimuli_additional1"):
             if not f[0] == '.':
-                self.stimuli.append("additional_stimuli/" + f)
+                self.stimuli.append("stimuli_additional1/" + f)
         num_stimuli = len(self.stimuli)
 
         self.songOrder = []

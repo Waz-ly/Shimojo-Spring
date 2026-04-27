@@ -26,8 +26,8 @@ model.eval()
 for file in test_set:
     if os.path.isfile("stimuli/" + file):
         audio_file = "stimuli/" + file
-    elif os.path.isfile("additional_stimuli/" + file):
-        audio_file = "additional_stimuli/" + file
+    elif os.path.isfile("stimuli_additional1/" + file):
+        audio_file = "stimuli_additional1/" + file
     else:
         raise FileNotFoundError("file from test set not found")
     
