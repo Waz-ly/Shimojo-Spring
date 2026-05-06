@@ -5,8 +5,8 @@ from GLOBAL import *
 import os
 
 class Nested:
-    def __init__(self, window, width, height):
-        self.game = Game(window, width, height)
+    def __init__(self, window, width, height, mode):
+        self.game = Game(window, width, height, mode)
 
     def gui(self):
         clock = pygame.time.Clock()

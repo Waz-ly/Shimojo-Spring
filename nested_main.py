@@ -7,6 +7,8 @@ if __name__ == "__main__":
     window = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption("Preference")
 
-    test = Nested(window, WIDTH, HEIGHT)
+    mode = "near" #near vs far
+
+    test = Nested(window, WIDTH, HEIGHT, mode)
     test.gui()
     test.save()

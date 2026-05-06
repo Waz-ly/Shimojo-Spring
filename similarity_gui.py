@@ -35,9 +35,8 @@ class SimilarityTest:
             eps=1e-9,
             n_init=1,
             random_state=1,
-            metric="precomputed",
             n_jobs=1,
-            init="classical_mds",
+            dissimilarity="precomputed"
         )
         X_mds = mds.fit(data).embedding_
 

@@ -63,6 +63,8 @@ class Game:
                 if not f[0] == '.' and not os.path.splitext(f)[0] in labels:
                     self.gameInfo.stimuli.append("stimuli_additional" + str(stimuli_set_number) + "/" + f)
 
+            stimuli_set_number += 1
+
         self.gameInfo.songOrder = []
 
         for i in np.arange(len(original_labels)):

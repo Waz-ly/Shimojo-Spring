@@ -8,24 +8,35 @@ from sound_main import calculate_MDS
 pygame.init()
 
 class GameInformation:
-    def __init__(self):
+    def __init__(self, mode):
         mds, labels = calculate_MDS(plot=False)
 
         test_point = "harp"
         test_point_coords = mds[labels.tolist().index(test_point)]
 
-        furthest_label = None
+        furthest_label = test_point
         furthest_coord = test_point_coords
 
-        for coord, label in zip(mds, labels):
-            if np.linalg.norm(test_point_coords - coord) > np.linalg.norm(test_point_coords - furthest_coord):
-                furthest_coord = coord
-                furthest_label = label
+        max_distance = 0
+        if mode == "far":
+            max_distance = 0.3
+        elif mode == "near":
+            max_distance = 0.25
+
+        if mode == "far":
+            for coord, label in zip(mds, labels):
+                if np.linalg.norm(test_point_coords - coord) > np.linalg.norm(test_point_coords - furthest_coord):
+                    furthest_coord = coord
+                    furthest_label = label
         
         furthest_labels = []
         for coord, label in zip(mds, labels):
-            if np.linalg.norm(furthest_coord - coord) < 0.3:
+            if mode == "near" and furthest_label == label:
+                continue
+
+            if np.linalg.norm(furthest_coord - coord) < max_distance:
                 furthest_labels.append(label)
+
         furthest_labels.append(test_point)
 
         self.stimuli = []
@@ -63,12 +74,12 @@ class GameInformation:
         self.playing_B = False
 
 class Game:
-    def __init__(self, window, width, height):
+    def __init__(self, window, width, height, mode):
         self.width = width
         self.height = height
         self.window = window
 
-        self.gameInfo = GameInformation()
+        self.gameInfo = GameInformation(mode)
 
         pygame.mixer.init()
 
