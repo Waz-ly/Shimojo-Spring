@@ -1,18 +1,2 @@
-,toilet,guitar,bird chirp,car honk,door slam,bass drum synthesized,elephant,harp,trumpet,xylophone,brown noise,sine wave,white noise,triangle wave,sine sweep,sawtooth wave,square wave
-toilet,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,3.97
-guitar,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,4.28,0.0,0.0,0.0,0.0,2.37
-bird chirp,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
-car honk,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
-door slam,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
-bass drum synthesized,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
-elephant,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,4.37,0.0,0.0,0.0,0.0,0.0
-harp,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,4.5,0.0,0.0,4.52,0.0
-trumpet,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,3.82,0.0,0.0,0.0,4.12
-xylophone,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,3.53,0.0,0.0,0.0,0.0,5.55,4.01
-brown noise,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,3.53,0.0,0.0,0.0,0.0,0.0,0.0,0.0
-sine wave,0.0,4.28,0.0,0.0,0.0,0.0,4.37,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
-white noise,0.0,0.0,0.0,0.0,0.0,0.0,0.0,4.5,3.82,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
-triangle wave,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
-sine sweep,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
-sawtooth wave,0.0,0.0,0.0,0.0,0.0,0.0,0.0,4.52,0.0,5.55,0.0,0.0,0.0,0.0,0.0,0.0,0.0
-square wave,3.97,2.37,0.0,0.0,0.0,0.0,0.0,0.0,4.12,4.01,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+,toilet,car honk,triangle,violin,hi-hat,door slam,bell,piano,clarinet,organ,flute,plane,elephant,distorted guitar,guitar,harp,oboe,rain,bass drum synthesized,cymbal,pig,trumpet,french horn,bird chirp,alto sax,xylophone,cow,Long Didgeridoo,brown noise,sine wave,picked distorted guitar,white noise,triangle wave,guitar picked,dog,pink noise,didgeridoo,lion,sine sweep,engine rev,sawtooth wave,square wave,drive by
+None,3.19,4.79,6.64,5.95,6.47,3.59,6.5,4.66,3.82,5.61,5.76,4.45,6.66,4.64,6.43,5.97,5.69,6.01,5.44,4.62,4.43,3.74,3.91,5.08,4.05,6.5,5.27,6.24,5.59,5.53,6.31,3.55,3.0,6.56,5.5,3.84,5.48,6.12,7.23,6.35,1.69,2.94,4.52

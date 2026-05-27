@@ -35,8 +35,9 @@ class GameInformation:
         self.playing_B = False
 
 class Game:
-    def __init__(self, window, width, height):
+    def __init__(self, window, keyword, width, height):
         self.width = width
+        self.keyword = keyword
         self.height = height
         self.window = window
 
@@ -62,7 +63,7 @@ class Game:
             LARGE_FONT.render_to(self.window, (NEXT_TEXT_X, NEXT_TEXT_Y), f"next", WHITE)
 
         SMALL_FONT.render_to(self.window, (EXPERIMENT_TEXT_X, EXPERIMENT_TEXT_Y1), f"Click the play buttons to listen to the stimuli.", WHITE)
-        SMALL_FONT.render_to(self.window, (EXPERIMENT_TEXT_X, EXPERIMENT_TEXT_Y2), f"Move the slider on the right based on the stimuli's *score*.", WHITE)
+        SMALL_FONT.render_to(self.window, (EXPERIMENT_TEXT_X, EXPERIMENT_TEXT_Y2), f"Move the slider on the right based on how {self.keyword} the stimuli is.", WHITE)
         SMALL_FONT.render_to(self.window, (EXPERIMENT_TEXT_X, EXPERIMENT_TEXT_Y3), f"Click next when complete. Try to use the full range of the scale.", WHITE)
 
         # scale
@@ -82,8 +83,8 @@ class Game:
                            (SCALE_CENTER, self.height//2 - (self.gameInfo.similarityScore-5)*SCALE_HEIGHT//(SENTIMENT_OPTIONS-1)),
                            SIMILARITY_INDICATOR_SIZE)
 
-        SMALL_FONT.render_to(self.window, (SCALE_LABEL_X, SCALE_LABEL_Y_1), f"most ''", WHITE)
-        SMALL_FONT.render_to(self.window, (SCALE_LABEL_X, SCALE_LABEL_Y_2), f"least ''", WHITE)
+        SMALL_FONT.render_to(self.window, (SCALE_LABEL_X, SCALE_LABEL_Y_1), f"most {self.keyword}", WHITE)
+        SMALL_FONT.render_to(self.window, (SCALE_LABEL_X, SCALE_LABEL_Y_2), f"least {self.keyword}", WHITE)
 
         LARGE_FONT.render_to(self.window, (20, 10), f"{self.gameInfo.song_number}", WHITE)
 
@@ -115,6 +116,8 @@ class Game:
         # check game end
         if self.gameInfo.song_number >= len(self.gameInfo.songOrder):
             self.gameInfo.testing_completed = True
+        else:
+            self.play_A()
 
     def play_A(self):
         pygame.mixer.music.load(self.gameInfo.stimuli[self.gameInfo.songOrder[self.gameInfo.song_number]])

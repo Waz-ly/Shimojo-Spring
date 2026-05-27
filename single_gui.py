@@ -5,8 +5,8 @@ from GLOBAL import *
 import os
 
 class ScoreTest:
-    def __init__(self, window, width, height):
-        self.game = Game(window, width, height)
+    def __init__(self, window, keyword, width, height):
+        self.game = Game(window, keyword, width, height)
 
     def gui(self):
         clock = pygame.time.Clock()

@@ -1,16 +1,24 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from sound_main import calculate_MDS
+import scipy.stats
+import statsmodels.api as sm
 
 test_number = 5
 
 x_mds, labels = calculate_MDS()
 
 results = np.loadtxt('week_1_test_results.csv', delimiter=',', dtype=str)
+results = results[:6,]
+
+results2 = np.loadtxt('week_3_test_results.csv', delimiter=',', dtype=str)
+results2 = results2[:6,]
+
 fixed_results = np.zeros_like(results[:,1:])
 
 for index, result in enumerate(results[0,1:]):
-    fixed_results[:,labels.tolist().index(result)] = results[:,1+index]
+    fixed_results[0,labels.tolist().index(result)] = results[0,1+index]
+    fixed_results[1:,labels.tolist().index(result)] = (np.array(results[1:,1+index],dtype=float) + np.array(results2[1:,1+index],dtype=float)) / 2
 
 if not np.array_equal(labels, fixed_results[0]):
     print(labels, fixed_results[0])
@@ -127,8 +135,57 @@ def familiar_donut():
 
     plt.show()
 
+def novelty_vs_familiarity():
+
+    plt.scatter(
+        np.array(fixed_results[2,:], dtype=float),
+        np.array(fixed_results[4,:], dtype=float),
+        color="turquoise",
+        s=100,
+        lw=0
+    )
+
+    plt.xlabel("familiarity")
+    plt.ylabel("novelty")
+
+    m, c, r_value, p_value, *_ = scipy.stats.linregress(
+        np.array(fixed_results[2,:], dtype=float),
+        np.array(fixed_results[4,:], dtype=float)
+    )
+    plt.plot(np.array(fixed_results[2,:], dtype=float), m*np.array(fixed_results[2,:], dtype=float) + c, color='r')
+    
+    textstr = '\n'.join((
+        r'$R^2=%.2f$' % (r_value**2, ),
+        r'$\text{p value}=%.4f$' % (p_value, )
+    ))
+
+    print(r_value**2, p_value)
+
+    props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
+
+    plt.text(0.05, 0.95, textstr, fontsize=14, verticalalignment='top', bbox=props)
+    
+    plt.plot()
+    plt.show()
+
+    def reg_m(y, x):
+        x = np.array(x).T
+        x = sm.add_constant(x)
+        results = sm.OLS(endog=y, exog=x).fit()
+
+        return results
+
+    print(reg_m(
+        np.array(fixed_results[1,:], dtype=float),
+        [
+            np.array(fixed_results[2,:], dtype=float),
+            np.array(fixed_results[4,:], dtype=float)
+        ]).summary()) # fam, nov
+
 novelty_donut()
 familiar_donut()
 
 raw()
 processed()
+
+novelty_vs_familiarity()
