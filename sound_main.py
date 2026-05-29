@@ -6,6 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sound_gui import SoundGUI
 from GLOBAL import *
+import os
 
 def calculate_MDS(plot=True):
     result = np.loadtxt('result.csv', delimiter=',', dtype=str)
@@ -33,36 +34,42 @@ def calculate_MDS(plot=True):
 
     # --------------
 
-    additional_results = np.loadtxt('results_additional.csv', delimiter=',', dtype=str)
+    stimuli_set_number = 1
 
-    original_labels = additional_results[0,1:11]
-    additional_labels = additional_results[1:,0]
-    data = np.array(additional_results[1:,1:11], dtype=float)
+    while os.path.exists('results_additional' + str(stimuli_set_number) + '.csv'):
 
-    original_points = [None] * 10
-    for index, label in enumerate(labels):
-        for points_index, point_label in enumerate(original_labels):
-            if label == point_label:
-                original_points[points_index] = X_mds[index]
+        additional_results = np.loadtxt('results_additional' + str(stimuli_set_number) + '.csv', delimiter=',', dtype=str)
 
-    for index, point in enumerate(data):
-        known_distances = scaling_factor/point
+        original_labels = additional_results[0,1:11]
+        additional_labels = additional_results[1:,0]
+        data = np.array(additional_results[1:,1:11], dtype=float)
 
-        def stress(coords_flat):
-            coords = coords_flat.reshape(1, 2)
-            dists = np.linalg.norm(coords - original_points, axis=1)  # 2D distances
-            return np.sum((dists - known_distances) ** 2)
+        original_points = [None] * 10
+        for index, label in enumerate(labels):
+            for points_index, point_label in enumerate(original_labels):
+                if label == point_label:
+                    original_points[points_index] = X_mds[index]
 
-        # Run optimizer from multiple random starts to avoid local minima
-        best_result = None
-        for _ in range(20):
-            x0 = np.random.randn(2)
-            res = scipy.optimize.minimize(stress, x0, method='L-BFGS-B')
-            if best_result is None or res.fun < best_result.fun:
-                best_result = res
-        
-        X_mds = np.concatenate([X_mds, best_result.x.reshape(1, 2)])
-        labels = np.concatenate([labels, [additional_labels[index]]])
+        for index, point in enumerate(data):
+            known_distances = scaling_factor/point
+
+            def stress(coords_flat):
+                coords = coords_flat.reshape(1, 2)
+                dists = np.linalg.norm(coords - original_points, axis=1)  # 2D distances
+                return np.sum((dists - known_distances) ** 2)
+
+            # Run optimizer from multiple random starts to avoid local minima
+            best_result = None
+            for _ in range(20):
+                x0 = np.random.randn(2)
+                res = scipy.optimize.minimize(stress, x0, method='L-BFGS-B')
+                if best_result is None or res.fun < best_result.fun:
+                    best_result = res
+            
+            X_mds = np.concatenate([X_mds, best_result.x.reshape(1, 2)])
+            labels = np.concatenate([labels, [additional_labels[index]]])
+
+        stimuli_set_number += 1
 
     # --------------
 

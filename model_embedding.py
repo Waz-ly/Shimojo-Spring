@@ -6,26 +6,31 @@ from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 import matplotlib.pyplot as plt
 from sound_main import calculate_MDS
-from model_set_generator import get_test_set
 
 def get_embeddings():
-
-    test_set = get_test_set()
 
     audio_files = []
     labels = []
     for file in os.listdir("stimuli"):
-        if file[0] == "." or file in test_set:
+        if file[0] == ".":
             continue
 
         audio_files.append("stimuli/" + file)
         labels.append(os.path.splitext(file)[0])
-    for file in os.listdir("additional_stimuli"):
-        if file[0] == "." or file in test_set:
-            continue
+        
+    stimuli_set_number = 1
+    while os.path.exists("stimuli_additional" + str(stimuli_set_number)):
 
-        audio_files.append("additional_stimuli/" + file)
-        labels.append(os.path.splitext(file)[0])
+        for file in os.listdir("stimuli_additional" + str(stimuli_set_number)):
+            if file[0] == ".":
+                continue
+
+            audio_files.append("stimuli_additional" + str(stimuli_set_number) + "/" + file)
+            labels.append(os.path.splitext(file)[0])
+
+        stimuli_set_number += 1
+
+    print(len(audio_files))
 
     embeddings = []
     for file in audio_files:
@@ -85,4 +90,5 @@ if __name__ == "__main__":
     graph_embeddings(embeddings, embedding_labels)
 
     np.save("model/embeddings.npy", embeddings)
+    np.save("model/embedding_labels.npy", embedding_labels)
     np.save("model/targets_2d.npy", fixed_targets)
