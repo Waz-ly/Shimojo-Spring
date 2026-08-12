@@ -1,7 +1,7 @@
 import os
 import numpy as np
 
-def get_test_set(seed=2, test_set_size=10):
+def get_test_set(seed=1, test_set_size=10):
 
     files = []
 

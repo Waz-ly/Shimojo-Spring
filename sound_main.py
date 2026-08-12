@@ -8,7 +8,18 @@ from sound_gui import SoundGUI
 from GLOBAL import *
 import os
 
-def calculate_MDS(plot=True):
+def procrustes_align(reference, points):
+    """Align points to reference via best rotation/reflection + translation (no rescaling)."""
+
+    ref_mean = reference.mean(axis=0)
+    pts_mean = points.mean(axis=0)
+    ref_c = reference - ref_mean
+    pts_c = points - pts_mean
+    R, _ = scipy.linalg.orthogonal_procrustes(pts_c, ref_c)
+    
+    return pts_c @ R + ref_mean
+
+def calculate_MDS(plot=True, random_state=1):
     result = np.loadtxt('result.csv', delimiter=',', dtype=str)
 
     labels = result[1:,0]
@@ -21,7 +32,7 @@ def calculate_MDS(plot=True):
         max_iter=3000,
         eps=1e-9,
         n_init=1,
-        random_state=1,
+        random_state=random_state,
         n_jobs=1,
         dissimilarity="precomputed"
     )
@@ -31,6 +42,8 @@ def calculate_MDS(plot=True):
     X_mds[:, 1] -= np.min(X_mds[:, 1])
     scaling_factor = 1/np.maximum(np.max(X_mds[:, 0]), np.max(X_mds[:, 1]))
     X_mds *= scaling_factor
+
+    print(scaling_factor)
 
     # --------------
 
@@ -77,6 +90,8 @@ def calculate_MDS(plot=True):
     X_mds[:, 1] -= np.min(X_mds[:, 1])
     scaling_factor = 1/np.maximum(np.max(X_mds[:, 0]), np.max(X_mds[:, 1]))
     X_mds *= scaling_factor
+
+    print(scaling_factor)
 
     if plot:
         fig = plt.figure()

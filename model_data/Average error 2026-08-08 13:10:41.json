@@ -1,0 +1,32 @@
+{
+  "test_settings": [
+    {
+      "training_number": "max",
+      "epochs": 2000,
+      "learning_rate": 3e-06,
+      "regularization": 0.001,
+      "dropout_probability": 0,
+      "hidden_layer_list": [
+        32,
+        32
+      ],
+      "PCA": false
+    },
+    {
+      "training_number": "max",
+      "epochs": 2000,
+      "learning_rate": 3e-06,
+      "regularization": 0.0001,
+      "dropout_probability": 0,
+      "hidden_layer_list": [
+        32,
+        32
+      ],
+      "PCA": false
+    }
+  ],
+  "metrics": [
+    0.19015258758946277,
+    0.1878314218096566
+  ]
+}

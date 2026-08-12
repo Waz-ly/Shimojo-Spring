@@ -88,6 +88,7 @@ if __name__ == "__main__":
         raise Exception("labels are not the same")
 
     graph_embeddings(embeddings, embedding_labels)
+    
 
     np.save("model/embeddings.npy", embeddings)
     np.save("model/embedding_labels.npy", embedding_labels)

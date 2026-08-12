@@ -14,11 +14,14 @@ results = results[:6,]
 results2 = np.loadtxt('week_3_test_results.csv', delimiter=',', dtype=str)
 results2 = results2[:6,]
 
+results3 = np.loadtxt('week_4_test_results.csv', delimiter=',', dtype=str)
+results3 = results3[:6,]
+
 fixed_results = np.zeros_like(results[:,1:])
 
 for index, result in enumerate(results[0,1:]):
     fixed_results[0,labels.tolist().index(result)] = results[0,1+index]
-    fixed_results[1:,labels.tolist().index(result)] = (np.array(results[1:,1+index],dtype=float) + np.array(results2[1:,1+index],dtype=float)) / 2
+    fixed_results[1:,labels.tolist().index(result)] = (np.array(results[1:,1+index],dtype=float) + np.array(results2[1:,1+index],dtype=float) + np.array(results3[1:,1+index],dtype=float)) / 3
 
 if not np.array_equal(labels, fixed_results[0]):
     print(labels, fixed_results[0])
@@ -78,6 +81,36 @@ def processed():
     processed.append(np.array(fixed_results[4,:], dtype=float))
     processed.append(np.array(fixed_results[3,:], dtype=float) - np.array(fixed_results[1,:], dtype=float))
     processed.append(np.array(fixed_results[2,:], dtype=float))
+
+    m, c, r_value, p_value, *_ = scipy.stats.linregress(
+        np.array(processed[2], dtype=float),
+        np.array(processed[1], dtype=float)
+    )
+
+    print()
+    print(f"Delta Attractiveness (Novelty) = {m} * Novelty + {c}")
+    print(f"R^2: {r_value**2}")
+    print(f"p: {p_value}")
+    print()
+
+    plt.scatter(processed[2], processed[1], color="turquoise", s=100, lw=0)
+    plt.plot(processed[2], m*processed[2] + c, color='r')
+    plt.show()
+
+    m, c, r_value, p_value, *_ = scipy.stats.linregress(
+        np.array(processed[4], dtype=float),
+        np.array(processed[3], dtype=float)
+    )
+
+    print()
+    print(f"Delta Attractiveness (Familiarity) = {m} * Familiarity + {c}")
+    print(f"R^2: {r_value**2}")
+    print(f"p: {p_value}")
+    print()
+
+    plt.scatter(processed[4], processed[3], color="turquoise", s=100, lw=0)
+    plt.plot(processed[4], m*processed[4] + c, color='r')
+    plt.show()
 
     fg = plt.figure()
 
@@ -159,7 +192,11 @@ def novelty_vs_familiarity():
         r'$\text{p value}=%.4f$' % (p_value, )
     ))
 
-    print(r_value**2, p_value)
+    print()
+    print(f"Novelty = {m} * Familiarity + {c}")
+    print(f"R^2: {r_value**2}")
+    print(f"p: {p_value}")
+    print()
 
     props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
 
